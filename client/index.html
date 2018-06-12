@@ -36,7 +36,7 @@ socket.on("mapUpdate", function(data){
 canvas.addEventListener("click", handleClick);
 
 document.addEventListener("keydown", function(e){
-	console.log("key pressed " + e.keyDown);
+	console.log("key pressed " + e.keyCode);
 	if (e.keyCode == 37){
 		console.log("left pressed");
 		//left
