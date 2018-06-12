@@ -76,6 +76,9 @@
 					defenderId : tile.unit.id
 				});
 			}
+			else if (tile.unit.teamId == faction.factionId){
+				selectedUnitId = tile.unit.teamId;
+			}
 			else{
 				selectedUnitId = tile.unit.id;
 			}
