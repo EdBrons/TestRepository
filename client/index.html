@@ -70,16 +70,20 @@
 		// var unit = map.getUnitAt({x : x, y : y});
 		var tile = map.unitMap[x][y];
 		if (tile.unit != null){
-			if (tile.unit.teamId != faction.factionId && selectedUnitId != null){
+			console.log("1")
+			if (tile.unit.teamId != faction && selectedUnitId != null && tile.unit.teamId != selectedUnitId){
+				console.log("2")
 				socket.emit("attackUnit", {
 					attackerId : selectedUnitId,
 					defenderId : tile.unit.id
 				});
 			}
-			else if (tile.unit.teamId == faction.factionId){
-				selectedUnitId = tile.unit.teamId;
+			else if (tile.unit.teamId == faction){
+				console.log("3")
+				selectedUnitId = tile.unit.id;
 			}
 			else{
+				console.log("4");
 				selectedUnitId = tile.unit.id;
 			}
 		}
