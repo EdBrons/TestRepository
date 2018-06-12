@@ -119,4 +119,13 @@ Map.prototype.deleteTeam = function(teamId){
 	}
 }
 
+Map.prototype.getUnitById = function(unitId){
+	for (var i in this.units){
+		if (this.units[i].id == unitId){
+			return this.units[i];
+		}
+	}
+	return false;
+}
+
 module.exports = Map;
