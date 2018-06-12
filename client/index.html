@@ -37,19 +37,40 @@ canvas.addEventListener("click", handleClick);
 
 document.addEventListener("keydown", function(e){
 	if (e.keyDown == 37){
-		socket.emit("moveUnit", {
-			unit : selectedUnit,
-			to : {x : x, y : y}
-		});
+		//left
+		if (selectedUnit != null){
+			socket.emit("moveUnit", {
+				unit : selectedUnit,
+				to : {x : selectedUnit.position.x - 1, y : selectedUnit.position.y}
+			});
+		}
 	}
 	else if (e.keyDown == 38){
-		console.log("Up arrow pressed");
+		//up
+		if (selectedUnit != null){
+			socket.emit("moveUnit", {
+				unit : selectedUnit,
+				to : {x : selectedUnit.position.x, y : selectedUnit.position.y + 1}
+			});
+		}
 	}
 	else if (e.keyDown == 39){
-		console.log("Right arrow pressed");
+		//right
+		if (selectedUnit != null){
+			socket.emit("moveUnit", {
+				unit : selectedUnit,
+				to : {x : selectedUnit.position.x + 1, y : selectedUnit.position.y}
+			});
+		}
 	}
 	else if (e.keyDown == 40){
-		console.log("Down arrow pressed");
+		//down
+		if (selectedUnit != null){
+			socket.emit("moveUnit", {
+				unit : selectedUnit,
+				to : {x : selectedUnit.position.x, y : selectedUnit.position.y - 1}
+			});
+		}
 	}
 });
 
