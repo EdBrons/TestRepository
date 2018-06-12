@@ -21,7 +21,7 @@ var Map = function(width, height){
 }
 
 Map.prototype.isInBounds = function(position){
-	return (position.x >= 0 && position.y >= 0 && position.x < this.width && position.y < this.height)
+	return (position.x >= 0 && position.y >= 0 && position.x < this.width && position.y < this.height);
 }
 
 Map.prototype.getUnitAt = function(position){
@@ -47,9 +47,14 @@ Map.prototype.createUnit = function(teamId, position){
 Map.prototype.update = function(){
 	for (var i in this.units){
 		var unit = this.units[i];
+
+		if (unit.attackCooldown > 0){
+			unit.attackCooldown--;
+		}
+
 		if (unit.moving){
 			if (this.canMoveTo(unit, unit.destination)){
-				unit.progress++;
+				unit.progress += 10;
 				if (unit.progress > 100){
 
 					//tell ian for testing purposes
@@ -75,6 +80,21 @@ Map.prototype.update = function(){
 				//unit cant move to tile so it stops
 				unit.moving = false;
 			}
+		}
+	}
+}
+
+Map.prototype.attack = function(attackerId, defenderId){
+	var attacker = this.getUnitById(attackerId);
+	var defender = this.getUnitById(defenderId);
+	if (Utils.isAdjacent(attacker.position, defender.position)){
+		if (attacker.attackCooldown <= 0){
+			console.log(attacker.getName() + " attacked" + defender.getName());
+			defender.health -= attacker.attack;
+			if (defender.health < 0){
+				this.deleteUnit(defenderId);
+			}
+			attacker.attackCooldown = attacker.attackTime;
 		}
 	}
 }
@@ -118,6 +138,19 @@ Map.prototype.deleteTeam = function(teamId){
 	for (var i = this.units.length - 1; i >= 0; i--){
 		var unit = this.units[i];
 		if (unit.teamId == teamId){
+			this.unitMap[unit.position.x][unit.position.y].unit = null;
+			if (unit.destination != null){
+				this.unitMap[unit.destination.x][unit.destination.y].movingTo = null;
+			}
+			this.units.splice(i, 1);
+		}
+	}
+}
+
+Map.prototype.deleteUnit = function(unitId){
+	for (var i = this.units.length - 1; i >= 0; i--){
+		var unit = this.units[i];
+		if (unit.id == unitId){
 			this.unitMap[unit.position.x][unit.position.y].unit = null;
 			if (unit.destination != null){
 				this.unitMap[unit.destination.x][unit.destination.y].movingTo = null;

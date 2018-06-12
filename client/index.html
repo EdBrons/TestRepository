@@ -7,134 +7,130 @@
 
 <body id="body">
 
+<div id="app">
+	Points : {{points}}
+	Selected Tile : {{selectedTile}}
+</div>
+
+<div id="ui">
+	<button onclick="buildUnit()">Build Unit</button>
+</div>
+
 <canvas id="canvas" width="1000" height="1000"></canvas>
 
 <script src="/socket.io/socket.io.js"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
 <script>
-var socket = io();
-var map;
-var units;
-var factions;
-var faction;
-var tileSize = 32;
-var canvas = document.getElementById("canvas");
-var c = canvas.getContext("2d");
+	var socket = io();
+	var map;
+	var units;
+	var factions = {};
+	var faction;
+	var tileSize = 16;
+	var canvas = document.getElementById("canvas");
+	var c = canvas.getContext("2d");
+
+	var app = new Vue({
+	  	el: '#app',
+	  	data: {
+	    	points: 0,
+	    	selectedTile : "none",
+	  	}
+	})
 	
-canvas.width = 20 * tileSize;
-canvas.height = 20 * tileSize;
-
-socket.on("mapUpdate", function(data){
-	console.log("Recieved map update.");
-	map = data.map;
-	factions = data.factions;
-	drawMap();
-});
-
-socket.on("faction", function(data){
-	faction = data.factionId;
-	document.body.style.backgroundColor = factions[faction].color;
-});
-
-var selectedUnitId = null;
-
-canvas.addEventListener("click", handleClick);
-
-document.addEventListener("keydown", handleKeydown);
-
-function handleKeydown(e){
-	console.log("key pressed " + e.keyCode);
-	var unitPosition = {x : 0, y : 0};
-	for (var i in map.units){
-		if (map.units[i].id == selectedUnitId){
-			unitPosition = map.units[i].position;
-		}
-	}
-	if (e.keyCode == 37){
-		//left
-		if (selectedUnitId != null){
-			console.log("Yes!");
-			socket.emit("moveUnit", {
-				unitId : selectedUnitId,
-				to : {x : unitPosition.x - 1, y : unitPosition.y}
-			});
-		}
-	}
-	else if (e.keyCode == 38){
-		//up
-		if (selectedUnitId != null){
-			socket.emit("moveUnit", {
-				unitId : selectedUnitId,
-				to : {x : unitPosition.x, y : unitPosition.y - 1}
-			});
-		}
-	}
-	else if (e.keyCode == 39){
-		//right
-		if (selectedUnitId != null){
-			socket.emit("moveUnit", {
-				unitId : selectedUnitId,
-				to : {x : unitPosition.x + 1, y : unitPosition.y}
-			});
-		}
-	}
-	else if (e.keyCode == 40){
-		//down
-		if (selectedUnitId != null){
-			socket.emit("moveUnit", {
-				unitId : selectedUnitId,
-				to : {x : unitPosition.x, y : unitPosition.y + 1}
-			});
-		}
-	}
-}
+	canvas.width = 20 * tileSize;
+	canvas.height = 20 * tileSize;
 	
-function handleClick(e){
-	var x = Math.floor((e.clientX - canvas.offsetLeft) / tileSize);
-	var y = Math.floor((e.clientY - canvas.offsetTop) / tileSize);
-	// var unit = map.getUnitAt({x : x, y : y});
-	var tile = map.unitMap[x][y];
-	if (tile.unit != null){
-		selectedUnitId = tile.unit.id;
-	}
-	else {
-		if (tile.movingTo == null && selectedUnitId != null){
-			socket.emit("moveUnit", {
-				unitId : selectedUnitId,
-				to : {x : x, y : y}
-			});
-			selectedUnitId = null;
+	socket.on("mapUpdate", function(data){
+		console.log("Recieved map update.");
+		map = data.map;
+		factions = data.factions;
+		drawMap();
+		if (faction){
+			app.points = factions[faction].points;
 		}
-	}
-}
-function drawMap(){
-	c.clearRect(0, 0, canvas.width, canvas.height);
-	//temporary drawing of tiles
-	c.fillStyle = "#2ECC71";
-	c.fillRect(0, 0, map.width * tileSize, map.height * tileSize);
-	for (var i in map.units){
-		var unit = map.units[i];
-		c.fillStyle = factions[unit.teamId].color;
-		var x = unit.position.x * tileSize;
-		var y = unit.position.y * tileSize;
-		if (unit.moving){
-			if (unit.position.x > unit.destination.x){
-				x -= Math.floor(tileSize * unit.progress / 100);
-			}
-			else if (unit.position.x < unit.destination.x){
-				x += Math.floor(tileSize * unit.progress / 100);
-			}
+	});
 	
-			if (unit.position.y > unit.destination.y){
-				y -= Math.floor(tileSize * unit.progress / 100);
+	socket.on("faction", function(data){
+		faction = data.factionId;
+		document.body.style.backgroundColor = factions[faction].color;
+	});
+	
+	var selectedUnitId = null;
+	
+	canvas.addEventListener("click", handleClick);
+	
+	// document.addEventListener("keydown", handleKeydown);
+
+	function handleClick(e){
+		var x = Math.floor((e.clientX - canvas.offsetLeft) / tileSize);
+		var y = Math.floor((e.clientY - canvas.offsetTop) / tileSize);
+		// var unit = map.getUnitAt({x : x, y : y});
+		var tile = map.unitMap[x][y];
+		if (tile.unit != null){
+			if (tile.unit.teamId != faction.factionId && selectedUnitId != null){
+				socket.emit("attackUnit", {
+					attackerId : selectedUnitId,
+					defenderId : tile.unit.id
+				});
 			}
-			else if (unit.position.y < unit.destination.y){
-				y += Math.floor(tileSize * unit.progress / 100);
+			else{
+				selectedUnitId = tile.unit.id;
 			}
 		}
-		c.fillRect(x, y, tileSize, tileSize);
+		else {
+			if (tile.movingTo == null && selectedUnitId != null){
+				socket.emit("moveUnit", {
+					unitId : selectedUnitId,
+					to : {x : x, y : y}
+				});
+			}
+		}
+		app.selectedTile = {x : x, y : y};
 	}
-}
+	
+	//Game
+
+	function drawMap(){
+		c.clearRect(0, 0, canvas.width, canvas.height);
+	
+		//temporary drawing of tiles
+		c.fillStyle = "#2ECC71";
+		c.fillRect(0, 0, map.width * tileSize, map.height * tileSize);
+	
+	
+		for (var i in map.units){
+			var unit = map.units[i];
+			c.fillStyle = factions[unit.teamId].color;
+			var x = unit.position.x * tileSize;
+			var y = unit.position.y * tileSize;
+			if (unit.moving){
+				if (unit.position.x > unit.destination.x){
+					x -= Math.floor(tileSize * unit.progress / 100);
+				}
+				else if (unit.position.x < unit.destination.x){
+					x += Math.floor(tileSize * unit.progress / 100);
+				}
+		
+				if (unit.position.y > unit.destination.y){
+					y -= Math.floor(tileSize * unit.progress / 100);
+				}
+				else if (unit.position.y < unit.destination.y){
+					y += Math.floor(tileSize * unit.progress / 100);
+				}
+			}
+			
+			c.fillRect(x, y, tileSize, tileSize);
+		}
+	}
+
+	function buildUnit(){
+		socket.emit("buyUnit", {
+			position : app.selectedTile,
+		});
+	}
 </script>
 
 </body>

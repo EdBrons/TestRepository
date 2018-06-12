@@ -8,8 +8,7 @@ app.get('/', function(req, res,next) {
     res.sendFile(__dirname + '/client/index.html');
 });
 
-//client files
-app.use("/client", express.static(__dirname + "client/"));
+app.use("/client", express.static(__dirname + "/client"));
 
 const PORT = process.env.PORT || 2000;
 
@@ -34,7 +33,60 @@ io.sockets.on("connection", function(socket){
 
 	factions[socket.id] = {};
 	factions[socket.id].color = socket.color;
+	factions[socket.id].points = 100;
 
+	map.createUnit(socket.id, getRandomPosition());
+
+	socket.on("disconnect", function() {
+		console.log(socket.id + " has disconnected.");
+		delete sockets[socket.id];
+		delete factions[socket.id];
+		map.deleteTeam(socket.id);
+	});
+
+	socket.on("attackUnit", function(data){
+		map.attack(data.attackerId, data.defenderId);
+	});
+
+	socket.on("buyUnit", function(data){
+		if (factions[socket.id].points >= 100){
+			var position = data.positon;
+			if (position && map.getUnitAt(position) != null && map.getUnitMovingTo(position) != null){
+				data.position = getRandomPosition();
+			}
+			if (!map.isInBounds(data.position)){
+				data.position = getRandomPosition();
+			}
+			factions[socket.id].points -= 100;
+			map.createUnit(socket.id, data.position);
+		}
+	});
+
+	socket.on("moveUnit", function(data){
+		var unit = map.getUnitById(data.unitId);
+		if (unit.teamId == socket.id && map.isInBounds(data.to)){
+			map.moveUnit(data.unitId, data.to);
+		}
+	});
+
+	updateClients();
+
+	socket.emit("faction", {
+		factionId : socket.id
+	});
+});
+
+function updateClients(){
+	for (var i in sockets){
+		var socket = sockets[i];
+		socket.emit("mapUpdate", {
+			map : map,
+			factions : factions
+		});
+	}
+}
+
+function getRandomPosition(){
 	var position = {
 		x : Math.floor(Math.random() * map.width),
 		y : Math.floor(Math.random() * map.height)
@@ -53,44 +105,18 @@ io.sockets.on("connection", function(socket){
 		}
 	}
 
-	map.createUnit(socket.id, position);
-
-	socket.on("disconnect", function() {
-		console.log(socket.id + " has disconnected.");
-		delete sockets[socket.id];
-		delete factions[socket.id];
-		map.deleteTeam(socket.id);
-	});
-
-	socket.on("moveUnit", function(data){
-		var unit = map.getUnitById(data.unitId);
-		if (unit.teamId == socket.id && map.isInBounds(data.to)){
-			map.moveUnit(data.unitId, data.to);
-		}
-	});
-
-	updateClients();
-	
-	socket.emit("faction", {
-		factionId : socket.id
-	});
-});
-
-function updateClients(){
-	for (var i in sockets){
-		var socket = sockets[i];
-		socket.emit("mapUpdate", {
-			map : map,
-			factions : factions
-		});
-	}
+	return position;
 }
 
-var ticksPerSecond = 60;
+var ticksPerSecond = 20;
 
 function Tick(){
 	
 	map.update();
+
+	for (var i in factions){
+		factions[i].points += .01;
+	}
 
 	updateClients();
 
