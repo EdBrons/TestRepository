@@ -46,7 +46,7 @@ document.addEventListener("keydown", function(e){
 		if (selectedUnitId != null){
 			console.log("Yes!");
 			socket.emit("moveUnit", {
-				unit : selectedUnit,
+				unitId : selectedUnitId,
 				to : {x : selectedUnit.position.x - 1, y : selectedUnit.position.y}
 			});
 		}
@@ -55,7 +55,7 @@ document.addEventListener("keydown", function(e){
 		//up
 		if (selectedUnit != null){
 			socket.emit("moveUnit", {
-				unit : selectedUnit,
+				unitId : selectedUnitId,
 				to : {x : selectedUnit.position.x, y : selectedUnit.position.y + 1}
 			});
 		}
@@ -64,7 +64,7 @@ document.addEventListener("keydown", function(e){
 		//right
 		if (selectedUnit != null){
 			socket.emit("moveUnit", {
-				unit : selectedUnit,
+				unitId : selectedUnitId,
 				to : {x : selectedUnit.position.x + 1, y : selectedUnit.position.y}
 			});
 		}
@@ -73,7 +73,7 @@ document.addEventListener("keydown", function(e){
 		//down
 		if (selectedUnit != null){
 			socket.emit("moveUnit", {
-				unit : selectedUnit,
+				unitId : selectedUnitId,
 				to : {x : selectedUnit.position.x, y : selectedUnit.position.y - 1}
 			});
 		}
