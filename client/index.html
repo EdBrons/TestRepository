@@ -1,0 +1,96 @@
+<!doctype html>  
+<html lang="en">
+
+<head>
+
+</head>
+
+<body>
+
+<canvas id="canvas" width="1000" height="1000"></canvas>
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+
+var socket = io();
+
+var map;
+var units;
+var factions;
+var tileSize = 32;
+
+var canvas = document.getElementById("canvas");
+var c = canvas.getContext("2d");
+
+
+socket.on("mapUpdate", function(data){
+	console.log("Recieved map update.");
+	map = data.map;
+	factions = data.factions;
+	drawMap();
+});
+
+canvas.addEventListener("click", handleClick);
+
+var selectedUnit = null;
+function handleClick(e){
+	var x = Math.floor((e.clientX - canvas.offsetLeft) / tileSize);
+	var y = Math.floor((e.clientY - canvas.offsetTop) / tileSize);
+
+	// var unit = map.getUnitAt({x : x, y : y});
+	var tile = map.unitMap[x][y];
+
+	if (tile.unit != null){
+		selectedUnit = tile.unit;
+	}
+	else {
+		if (tile.movingTo == null && selectedUnit != null){
+			socket.emit("moveUnit", {
+				unit : selectedUnit,
+				to : {x : x, y : y}
+			});
+			selectedUnit = null;
+		}
+	}
+}
+
+function drawMap(){
+	c.clearRect(0, 0, canvas.width, canvas.height);
+
+	//temporary drawing of tiles
+	c.fillStyle = "#2ECC71";
+	c.fillRect(0, 0, map.width * tileSize, map.height * tileSize);
+
+	for (var i in map.units){
+		var unit = map.units[i];
+		c.fillStyle = factions[unit.teamId].color;
+
+		var x = unit.position.x * tileSize;
+		var y = unit.position.y * tileSize;
+
+		if (unit.moving){
+			if (unit.position.x > unit.destination.x){
+				x -= Math.floor(tileSize * unit.progress / 100);
+			}
+			else if (unit.position.x < unit.destination.x){
+				x += Math.floor(tileSize * unit.progress / 100);
+			}
+	
+			if (unit.position.y > unit.destination.y){
+				y -= Math.floor(tileSize * unit.progress / 100);
+			}
+			else if (unit.position.y < unit.destination.y){
+				y += Math.floor(tileSize * unit.progress / 100);
+			}
+		}
+
+		c.fillRect(x, y, tileSize, tileSize);
+	}
+}
+
+</script>
+
+</body>
+
+</html>  
