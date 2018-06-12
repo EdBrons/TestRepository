@@ -57,6 +57,8 @@ io.sockets.on("connection", function(socket){
 
 	socket.on("disconnect", function() {
 		console.log(socket.id + " has disconnected.");
+		sockets[socket.id] = {};
+		factions[socket.id] = {};
 		map.deleteTeam(socket.id);
 	});
 
@@ -97,7 +99,7 @@ function getName(){
 	return names[i++];
 }
 
-var ticksPerSecond = 10;
+var ticksPerSecond = 60;
 
 function Tick(){
 	
