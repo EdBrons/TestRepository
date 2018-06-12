@@ -62,7 +62,7 @@ io.sockets.on("connection", function(socket){
 
 	socket.on("moveUnit", function(data){
 		console.log(socket.id + " tries to move " + data.unit.name + " to " + data.to.x + "," + data.to.y);
-		map.moveUnit(data.unit.id, data.to);
+		map.moveUnit(data.unitId, data.to);
 	});
 
 
