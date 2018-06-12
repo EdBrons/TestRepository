@@ -21,7 +21,7 @@ console.log("Server started.");
 var Map = require("./server/map.js");
 var Unit = require("./server/unit.js");
 
-var map = new Map(5, 5);
+var map = new Map(20, 20);
 
 var sockets = {};
 var factions = {};
