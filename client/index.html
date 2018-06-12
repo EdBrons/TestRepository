@@ -103,7 +103,7 @@ function handleKeyDown(e){
 		//left
 		if (selectedUnit != null){
 			socket.emit("moveUnit", {
-				unit : selectedUnit,
+				unitId : selectedUnit.id,
 				to : {x : selectedUnit.position.x - 1, y : selectedUnit.position.y}
 			});
 		}
@@ -112,8 +112,8 @@ function handleKeyDown(e){
 		//up
 		if (selectedUnit != null){
 			socket.emit("moveUnit", {
-				unit : selectedUnit,
-				to : {x : selectedUnit.position.x, y : selectedUnit.position.y + 1}
+				unitId : selectedUnit.id,
+				to : {x : selectedUnit.position.x, y : selectedUnit.position.y - 1}
 			});
 		}
 	}
@@ -121,7 +121,7 @@ function handleKeyDown(e){
 		//right
 		if (selectedUnit != null){
 			socket.emit("moveUnit", {
-				unit : selectedUnit,
+				unitId : selectedUnit.id,
 				to : {x : selectedUnit.position.x + 1, y : selectedUnit.position.y}
 			});
 		}
@@ -130,8 +130,8 @@ function handleKeyDown(e){
 		//down
 		if (selectedUnit != null){
 			socket.emit("moveUnit", {
-				unit : selectedUnit,
-				to : {x : selectedUnit.position.x, y : selectedUnit.position.y - 1}
+				unitId : selectedUnit.id,
+				to : {x : selectedUnit.position.x, y : selectedUnit.position.y + 1}
 			});
 		}
 	}
