@@ -97,7 +97,7 @@ function getName(){
 	return names[i++];
 }
 
-var ticksPerSecond = 60
+var ticksPerSecond = 10;
 
 function Tick(){
 	
