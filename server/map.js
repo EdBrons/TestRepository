@@ -106,4 +106,18 @@ Map.prototype.canMoveTo = function(unit, destination){
 	return true;
 }
 
+Map.prototype.deleteFaction = function(teamId){
+	for ( var i = this.units.length - 1; i >= 0; i-- ){
+		var unit = this.units[i];
+
+		if (unit.teamId == teamId){
+			this.unitAt[unit.position.x][unit.position.y].unit = null;
+			if (this.unitAt[unit.destination.x][unit.destination.y]){
+				this.unitAt[unit.destination.x][unit.destination.y].movingTo = null;
+			}			
+			this.units.splice(i, 1);
+		}
+	}
+}
+
 module.exports = Map;

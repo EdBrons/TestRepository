@@ -21,7 +21,7 @@ console.log("Server started.");
 var Map = require("./server/map.js");
 var Unit = require("./server/unit.js");
 
-var map = new Map(5, 5);
+var map = new Map(20, 20);
 
 var sockets = {};
 var factions = {};
@@ -40,15 +40,35 @@ io.sockets.on("connection", function(socket){
 		y : Math.floor(Math.random() * map.height)
 	};
 
+	var unique = true;
+
+	if (map.getUnitAt(position) != null){
+		unique = false;
+	}
+
+	while (unique == false){
+		position = {
+			x : Math.floor(Math.random() * map.width),
+			y : Math.floor(Math.random() * map.height)
+		};
+
+		unique = true;
+
+		if (map.getUnitAt(position) != null){
+			unique = false;
+		}
+	}
+
 	map.createUnit(socket.id, position, getName());
 
 	socket.on("disconnect", function() {
 		console.log(socket.id + " has disconnected.");
+		map.deleteFaction(socket.id);
 	});
 
 	socket.on("moveUnit", function(data){
 		console.log(socket.id + " tries to move " + data.unit.name + " to " + data.to.x + "," + data.to.y);
-		map.moveUnit(data.unit.id, data.to);
+		map.moveUnit(data.unitId, data.to);
 	});
 
 
