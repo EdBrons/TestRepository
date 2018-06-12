@@ -38,7 +38,8 @@ socket.on("mapUpdate", function(data){
 
 socket.on("faction", function(data){
 	faction = data.faction;
-	document.body.style.backgroundColor = factions[data.faction].color;
+	document.body.style.backgroundColor = "#FFFFFF";
+	console.log(factions[data.faction].color);
 });
 
 var selectedUnitId = null;
