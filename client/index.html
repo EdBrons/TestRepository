@@ -25,6 +25,8 @@ var c = canvas.getContext("2d");
 	
 var unit;
 
+canvas.width = 20 * tileSize;
+canvas.height = 20 * tileSize;
 
 socket.on("mapUpdate", function(data){
 	console.log("Recieved map update.");
