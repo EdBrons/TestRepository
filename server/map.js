@@ -111,6 +111,9 @@ Map.prototype.deleteTeam = function(teamId){
 		var unit = this.units[i];
 		if (unit.teamId == teamId){
 			this.unitMap[unit.position.x][unit.position.y].unit = null;
+			if (unit.destination != null){
+				this.unitMap[unit.destination.x][unit.destination.y].movingTo = null;
+			}
 			this.units.splice(i, 1);
 		}
 	}
