@@ -57,6 +57,7 @@ io.sockets.on("connection", function(socket){
 
 	socket.on("disconnect", function() {
 		console.log(socket.id + " has disconnected.");
+		map.deleteTeam(socket.id);
 	});
 
 	socket.on("moveUnit", function(data){
