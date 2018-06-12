@@ -38,8 +38,8 @@ Map.prototype.getUnitMovingTo = function(position){
 	return this.unitMap[position.x][position.y].movingTo;	
 }
 
-Map.prototype.createUnit = function(teamId, position, name){
-	var unit = new Unit(this.unitCount++, teamId, position, name);
+Map.prototype.createUnit = function(teamId, position){
+	var unit = new Unit(this.unitCount++, teamId, position);
 	this.units.push(unit);
 	this.unitMap[position.x][position.y].unit = unit;
 }
@@ -53,7 +53,7 @@ Map.prototype.update = function(){
 				if (unit.progress > 100){
 
 					//tell ian for testing purposes
-					console.log(unit.name + " moved from " + unit.position.x + "," + unit.position.y + " to " + unit.destination.x + "," + unit.destination.y);
+					console.log(unit.getName() + " moved from " + unit.position.x + "," + unit.position.y + " to " + unit.destination.x + "," + unit.destination.y);
 
 					//take unit off starting tile
 					this.unitMap[unit.position.x][unit.position.y].unit = null;
@@ -83,6 +83,14 @@ Map.prototype.moveUnit = function(unitId, destination){
 	for (var i in this.units){
 		var unit = this.units[i];
 		if (unit.id == unitId){
+
+			if (unit.moving){
+				// console.log(unit.destination.x + "," + unit.destination.y + " " + destination.x + "," + destination.y);
+				if (unit.destination.x == destination.x && unit.destination.y == destination.y){
+					return false;
+				}
+			}
+
 			unit.destination = destination;
 			this.unitMap[unit.destination.x][unit.destination.y].movingTo = unit;
 			unit.moving = true;
@@ -93,12 +101,12 @@ Map.prototype.moveUnit = function(unitId, destination){
 
 Map.prototype.canMoveTo = function(unit, destination){
 	if (!Utils.isAdjacent(unit.position, destination)){
-		console.log(unit.name + " can't move because the tiles are not adjacent.")
+		console.log(unit.getName() + " can't move because the tiles are not adjacent.")
 		return false;
 	}
 
 	if (this.getUnitAt(destination) != null && this.getUnitMovingTo(destination) != null){
-		console.log(unit.name + " can't move because the destination has a unit");
+		console.log(unit.getName() + " can't move because the destination has a unit");
 		return false;
 	}
 
@@ -106,17 +114,6 @@ Map.prototype.canMoveTo = function(unit, destination){
 	return true;
 }
 
-<<<<<<< HEAD
-Map.prototype.deleteFaction = function(teamId){
-	for ( var i = this.units.length - 1; i >= 0; i-- ){
-		var unit = this.units[i];
-
-		if (unit.teamId == teamId){
-			this.unitAt[unit.position.x][unit.position.y].unit = null;
-			if (this.unitAt[unit.destination.x][unit.destination.y]){
-				this.unitAt[unit.destination.x][unit.destination.y].movingTo = null;
-			}			
-=======
 Map.prototype.deleteTeam = function(teamId){
 	for (var i = this.units.length - 1; i >= 0; i--){
 		var unit = this.units[i];
@@ -125,15 +122,11 @@ Map.prototype.deleteTeam = function(teamId){
 			if (unit.destination != null){
 				this.unitMap[unit.destination.x][unit.destination.y].movingTo = null;
 			}
->>>>>>> 39caa774d0231cc8ba64ad002dfbdac876e2173d
 			this.units.splice(i, 1);
 		}
 	}
 }
 
-<<<<<<< HEAD
-module.exports = Map;
-=======
 Map.prototype.getUnitById = function(unitId){
 	for (var i in this.units){
 		if (this.units[i].id == unitId){
@@ -144,4 +137,3 @@ Map.prototype.getUnitById = function(unitId){
 }
 
 module.exports = Map;
->>>>>>> 39caa774d0231cc8ba64ad002dfbdac876e2173d

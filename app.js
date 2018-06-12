@@ -53,49 +53,20 @@ io.sockets.on("connection", function(socket){
 		}
 	}
 
-	var unique = true;
-
-	if (map.getUnitAt(position) != null){
-		unique = false;
-	}
-
-	while (unique == false){
-		position = {
-			x : Math.floor(Math.random() * map.width),
-			y : Math.floor(Math.random() * map.height)
-		};
-
-		unique = true;
-
-		if (map.getUnitAt(position) != null){
-			unique = false;
-		}
-	}
-
-	map.createUnit(socket.id, position, getName());
+	map.createUnit(socket.id, position);
 
 	socket.on("disconnect", function() {
 		console.log(socket.id + " has disconnected.");
-<<<<<<< HEAD
-		map.deleteFaction(socket.id);
-	});
-
-	socket.on("moveUnit", function(data){
-		console.log(socket.id + " tries to move " + data.unit.name + " to " + data.to.x + "," + data.to.y);
-		map.moveUnit(data.unitId, data.to);
-=======
-		sockets[socket.id] = {};
-		factions[socket.id] = {};
+		delete sockets[socket.id];
+		delete factions[socket.id];
 		map.deleteTeam(socket.id);
 	});
 
 	socket.on("moveUnit", function(data){
-		console.log(socket.id + " tries to move " + data.unitId + " to " + data.to.x + "," + data.to.y);
 		var unit = map.getUnitById(data.unitId);
-		if (unit.teamId == socket.id){
+		if (unit.teamId == socket.id && map.isInBounds(data.to)){
 			map.moveUnit(data.unitId, data.to);
 		}
->>>>>>> 39caa774d0231cc8ba64ad002dfbdac876e2173d
 	});
 
 	updateClients();
@@ -113,23 +84,6 @@ function updateClients(){
 			factions : factions
 		});
 	}
-}
-
-var i = 0;
-var names = [
-	"Jack",
-	"Ian",
-	"Lookas",
-	"George",
-	"Jill",
-	"Walton",
-	"Jim",
-	"Brad",
-	"Dave",
-	"IfWeGetThisFarTheNextUnitWillCrashTheServer!"
-];
-function getName(){
-	return names[i++];
 }
 
 var ticksPerSecond = 60;
