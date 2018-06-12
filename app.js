@@ -39,6 +39,19 @@ io.sockets.on("connection", function(socket){
 		x : Math.floor(Math.random() * map.width),
 		y : Math.floor(Math.random() * map.height)
 	};
+	
+	var unique = false;
+	
+	while (unique == false){
+		position = {
+			x : Math.floor(Math.random() * map.width),
+			y : Math.floor(Math.random() * map.height)
+		};
+		
+		if (map.getUnitAt(position) == null && map.getUnitMovingTo(position) == null){
+			unique = true;
+		}
+	}
 
 	map.createUnit(socket.id, position, getName());
 
