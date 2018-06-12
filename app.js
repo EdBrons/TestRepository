@@ -54,6 +54,10 @@ io.sockets.on("connection", function(socket){
 	}
 
 	map.createUnit(socket.id, position, getName());
+	
+	socket.emit("faction", {
+		factionId : socket.id
+	});
 
 	socket.on("disconnect", function() {
 		console.log(socket.id + " has disconnected.");
@@ -64,7 +68,10 @@ io.sockets.on("connection", function(socket){
 
 	socket.on("moveUnit", function(data){
 		console.log(socket.id + " tries to move " + data.unitId + " to " + data.to.x + "," + data.to.y);
-		map.moveUnit(data.unitId, data.to);
+		var unit = map.getUnitById(data.unitId);
+		if (unit.teamId == socket.id){
+			map.moveUnit(data.unitId, data.to);
+		}
 	});
 
 
