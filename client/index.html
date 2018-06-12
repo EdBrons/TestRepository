@@ -37,7 +37,7 @@ canvas.addEventListener("click", handleClick);
 
 document.addEventListener("keydown", function(e){
 	console.log("key pressed " + e.keyDown);
-	if (e.keyDown == 37){
+	if (e.keyCode == 37){
 		console.log("left pressed");
 		//left
 		if (selectedUnit != null){
@@ -47,7 +47,7 @@ document.addEventListener("keydown", function(e){
 			});
 		}
 	}
-	else if (e.keyDown == 38){
+	else if (e.keyCode == 38){
 		//up
 		if (selectedUnit != null){
 			socket.emit("moveUnit", {
@@ -56,7 +56,7 @@ document.addEventListener("keydown", function(e){
 			});
 		}
 	}
-	else if (e.keyDown == 39){
+	else if (e.keyCode == 39){
 		//right
 		if (selectedUnit != null){
 			socket.emit("moveUnit", {
@@ -65,7 +65,7 @@ document.addEventListener("keydown", function(e){
 			});
 		}
 	}
-	else if (e.keyDown == 40){
+	else if (e.keyCode == 40){
 		//down
 		if (selectedUnit != null){
 			socket.emit("moveUnit", {
