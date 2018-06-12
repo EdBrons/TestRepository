@@ -54,10 +54,6 @@ io.sockets.on("connection", function(socket){
 	}
 
 	map.createUnit(socket.id, position, getName());
-	
-	socket.emit("faction", {
-		factionId : socket.id
-	});
 
 	socket.on("disconnect", function() {
 		console.log(socket.id + " has disconnected.");
@@ -74,9 +70,11 @@ io.sockets.on("connection", function(socket){
 		}
 	});
 
-
-
 	updateClients();
+	
+	socket.emit("faction", {
+		factionId : socket.id
+	});
 });
 
 function updateClients(){
