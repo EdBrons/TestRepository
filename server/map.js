@@ -106,6 +106,7 @@ Map.prototype.canMoveTo = function(unit, destination){
 	return true;
 }
 
+<<<<<<< HEAD
 Map.prototype.deleteFaction = function(teamId){
 	for ( var i = this.units.length - 1; i >= 0; i-- ){
 		var unit = this.units[i];
@@ -115,9 +116,32 @@ Map.prototype.deleteFaction = function(teamId){
 			if (this.unitAt[unit.destination.x][unit.destination.y]){
 				this.unitAt[unit.destination.x][unit.destination.y].movingTo = null;
 			}			
+=======
+Map.prototype.deleteTeam = function(teamId){
+	for (var i = this.units.length - 1; i >= 0; i--){
+		var unit = this.units[i];
+		if (unit.teamId == teamId){
+			this.unitMap[unit.position.x][unit.position.y].unit = null;
+			if (unit.destination != null){
+				this.unitMap[unit.destination.x][unit.destination.y].movingTo = null;
+			}
+>>>>>>> 39caa774d0231cc8ba64ad002dfbdac876e2173d
 			this.units.splice(i, 1);
 		}
 	}
 }
 
+<<<<<<< HEAD
 module.exports = Map;
+=======
+Map.prototype.getUnitById = function(unitId){
+	for (var i in this.units){
+		if (this.units[i].id == unitId){
+			return this.units[i];
+		}
+	}
+	return false;
+}
+
+module.exports = Map;
+>>>>>>> 39caa774d0231cc8ba64ad002dfbdac876e2173d
