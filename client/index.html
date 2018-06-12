@@ -41,40 +41,46 @@ canvas.addEventListener("click", handleClick);
 
 document.addEventListener("keydown", function(e){
 	console.log("key pressed " + e.keyCode);
+	var unitPosition = {x : 0, y : 0};
+	for (var i in map.units){
+		if (map.units[i].id == selectedUnitId){
+			unitPosition = map.units[i].position;
+		}
+	}
 	if (e.keyCode == 37){
 		//left
 		if (selectedUnitId != null){
 			console.log("Yes!");
 			socket.emit("moveUnit", {
 				unitId : selectedUnitId,
-				to : {x : selectedUnit.position.x - 1, y : selectedUnit.position.y}
+				to : {x : unitPosition.x - 1, y : unitPosition.y}
 			});
 		}
 	}
 	else if (e.keyCode == 38){
 		//up
-		if (selectedUnit != null){
+		if (selectedUnitId != null){
 			socket.emit("moveUnit", {
 				unitId : selectedUnitId,
-				to : {x : selectedUnit.position.x, y : selectedUnit.position.y + 1}
+				to : {x : unitPosition.x, y : unitPosition.y + 1}
 			});
 		}
 	}
 	else if (e.keyCode == 39){
 		//right
-		if (selectedUnit != null){
+		if (selectedUnitId != null){
 			socket.emit("moveUnit", {
 				unitId : selectedUnitId,
-				to : {x : selectedUnit.position.x + 1, y : selectedUnit.position.y}
+				to : {x : unitPosition.x + 1, y : unitPosition.y}
 			});
 		}
 	}
 	else if (e.keyCode == 40){
 		//down
-		if (selectedUnit != null){
+		if (selectedUnitId != null){
 			socket.emit("moveUnit", {
 				unitId : selectedUnitId,
-				to : {x : selectedUnit.position.x, y : selectedUnit.position.y - 1}
+				to : {x : unitPosition.x, y : unitPosition.y - 1}
 			});
 		}
 	}
@@ -96,7 +102,7 @@ function handleClick(e){
 				unitId : selectedUnitId,
 				to : {x : x, y : y}
 			});
-			selectedUnit = null;
+			selectedUnitId = null;
 		}
 	}
 }
