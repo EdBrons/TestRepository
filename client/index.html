@@ -38,9 +38,9 @@ canvas.addEventListener("click", handleClick);
 document.addEventListener("keydown", function(e){
 	console.log("key pressed " + e.keyCode);
 	if (e.keyCode == 37){
-		console.log("left pressed");
 		//left
-		if (selectedUnit != null){
+		if (selectedUnitId != null){
+			console.log("Yes!");
 			socket.emit("moveUnit", {
 				unit : selectedUnit,
 				to : {x : selectedUnit.position.x - 1, y : selectedUnit.position.y}
@@ -85,12 +85,12 @@ function handleClick(e){
 	var tile = map.unitMap[x][y];
 
 	if (tile.unit != null){
-		selectedUnit = tile.unit;
+		selectedUnitId = tile.unit.id;
 	}
 	else {
 		if (tile.movingTo == null && selectedUnit != null){
 			socket.emit("moveUnit", {
-				unit : selectedUnit,
+				unitId : selectedUnitId,
 				to : {x : x, y : y}
 			});
 			selectedUnit = null;
@@ -101,36 +101,36 @@ function handleClick(e){
 function handleKeyDown(e){
 	if (e.keyDown == 37){
 		//left
-		if (selectedUnit != null){
+		if (selectedUnitId != null){
 			socket.emit("moveUnit", {
-				unitId : selectedUnit.id,
+				unitId : selectedUnitId,
 				to : {x : selectedUnit.position.x - 1, y : selectedUnit.position.y}
 			});
 		}
 	}
 	else if (e.keyDown == 38){
 		//up
-		if (selectedUnit != null){
+		if (selectedUnitId != null){
 			socket.emit("moveUnit", {
-				unitId : selectedUnit.id,
+				unitId : selectedUnitId,
 				to : {x : selectedUnit.position.x, y : selectedUnit.position.y - 1}
 			});
 		}
 	}
 	else if (e.keyDown == 39){
 		//right
-		if (selectedUnit != null){
+		if (selectedUnitId != null){
 			socket.emit("moveUnit", {
-				unitId : selectedUnit.id,
+				unitId : selectedUnitId,
 				to : {x : selectedUnit.position.x + 1, y : selectedUnit.position.y}
 			});
 		}
 	}
 	else if (e.keyDown == 40){
 		//down
-		if (selectedUnit != null){
+		if (selectedUnitId != null){
 			socket.emit("moveUnit", {
-				unitId : selectedUnit.id,
+				unitId : selectedUnitId,
 				to : {x : selectedUnit.position.x, y : selectedUnit.position.y + 1}
 			});
 		}
