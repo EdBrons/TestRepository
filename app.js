@@ -51,7 +51,7 @@ io.sockets.on("connection", function(socket){
 
 	socket.on("buyUnit", function(data){
 		if (factions[socket.id].points >= 100){
-			if (data.positon == undefined || data.positon == null){
+			if (data.positon){
 				data.position = getRandomPosition();
 			}
 			if (!map.isInBounds(data.position)){
