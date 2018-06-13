@@ -86,11 +86,11 @@ Map.prototype.update = function(){
 
 Map.prototype.attack = function(attackerId, defenderId){
 	var attacker = this.getUnitById(attackerId);
-	if (attacker == undefined){
+	if (attacker == false){
 		return false;	
 	}
 	var defender = this.getUnitById(defenderId);
-	if (defender == undefined){
+	if (defender == false){
 		return false;
 	}
 	if (Utils.isAdjacent(attacker.position, defender.position)){
