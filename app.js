@@ -35,8 +35,11 @@ io.sockets.on("connection", function(socket){
 	factions[socket.id].color = socket.color;
 	factions[socket.id].points = 100;
 	factions[socket.id].pointIncome = .1;
-
-	map.createUnit(socket.id, getRandomPosition());
+	
+	var position = getRandomPosition();
+	if (position != false){
+		map.createUnit(socket.id, position);	
+	}
 
 	socket.on("disconnect", function() {
 		console.log(socket.id + " has disconnected.");
@@ -55,7 +58,9 @@ io.sockets.on("connection", function(socket){
 				data.position = getRandomPosition();
 			}
 			factions[socket.id].points -= 100;
-			map.createUnit(socket.id, data.position);
+			if (data.position != false){
+				map.createUnit(socket.id, data.position);
+			}
 		}
 	});
 
@@ -84,6 +89,9 @@ function updateClients(){
 }
 
 function getRandomPosition(){
+	
+	var tries = 10;
+	
 	var position = {
 		x : Math.floor(Math.random() * map.width),
 		y : Math.floor(Math.random() * map.height)
@@ -99,6 +107,11 @@ function getRandomPosition(){
 		
 		if (map.getUnitAt(position) == null && map.getUnitMovingTo(position) == null){
 			unique = true;
+		}
+		
+		tries--;
+		if (tries < 0){
+			return false;
 		}
 	}
 
