@@ -86,7 +86,13 @@ Map.prototype.update = function(){
 
 Map.prototype.attack = function(attackerId, defenderId){
 	var attacker = this.getUnitById(attackerId);
+	if (attacker == undefined){
+		return false;	
+	}
 	var defender = this.getUnitById(defenderId);
+	if (defender == undefined){
+		return false;
+	}
 	if (Utils.isAdjacent(attacker.position, defender.position)){
 		if (attacker.attackCooldown <= 0){
 			console.log(attacker.getName() + " attacked" + defender.getName());
