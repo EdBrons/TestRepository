@@ -134,8 +134,11 @@
 			
 			c.fillRect(x, y, tileSize, tileSize);
 			
+			c.fillStyle = "#000000";
+			c.fillRect(x - Math.floor(tileSize * .4), y - Math.floor(tileSize * .6), Math.floor(tileSize * 1.8), Math.floor(tileSize * .4));
+			
 			c.fillStyle = "#FF0000";
-			c.fillRect(x - Math.floor(tileSize * .4), y - Math.floor(tileSize * .4), Math.floor(tileSize * 1.8), Math.floor(tileSize * .4));
+			c.fillRect(x - Math.floor(tileSize * .4) + 1, y - Math.floor(tileSize * .6) + 1, Math.floor(tileSize * 1.8) - 2, Math.floor(tileSize * .4) - 2);
 		}
 	}
 
