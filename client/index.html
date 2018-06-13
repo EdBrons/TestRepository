@@ -113,7 +113,6 @@
 	
 		for (var i in map.units){
 			var unit = map.units[i];
-			c.fillStyle = factions[unit.teamId].color;
 			var x = unit.position.x * tileSize;
 			var y = unit.position.y * tileSize;
 			if (unit.moving){
@@ -139,6 +138,7 @@
 			}
 			
 			//draw unit
+			c.fillStyle = factions[unit.teamId].color;
 			c.fillRect(x + 1, y + 1, tileSize - 2, tileSize - 2);
 			
 			//draw border around health bar
