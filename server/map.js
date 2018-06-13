@@ -109,6 +109,15 @@ Map.prototype.moveUnit = function(unitId, destination){
 				if (unit.destination.x == destination.x && unit.destination.y == destination.y){
 					return false;
 				}
+
+				else{
+					this.unitMap[unit.destination.x][unit.destination.y].movingTo = null;
+				}
+			}
+			else{
+				if (unit.destination != null){
+					this.unitMap[unit.destination.x][unit.destination.y].movingTo = null;
+				}
 			}
 
 			unit.destination = destination;

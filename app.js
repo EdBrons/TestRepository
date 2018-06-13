@@ -23,7 +23,6 @@ var Unit = require("./server/unit.js");
 var map = new Map(20, 20);
 
 var sockets = {};
-var factions = {};
 
 io.sockets.on("connection", function(socket){
 	console.log("Socket connection.");
@@ -115,7 +114,7 @@ function Tick(){
 	map.update();
 
 	for (var i in factions){
-		factions[i].points += .01;
+		factions[i].points += 1;
 	}
 
 	updateClients();

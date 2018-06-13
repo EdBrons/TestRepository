@@ -7,19 +7,17 @@
 
 <body id="body">
 
-<div id="app">
-	Points : {{points}}
-	Selected Tile : {{selectedTile}}
+<div id="game">
+	<div id="ui">
+		<div id="faction">Team {{faction}}</div>
+		Points : {{points}}
+		Selected Tile : {{selectedTile}}
+		<button onclick="buildUnit()">Build Unit</button>
+	</div>
+=	<canvas id="canvas"></canvas>
 </div>
-
-<div id="ui">
-	<button onclick="buildUnit()">Build Unit</button>
-</div>
-
-<canvas id="canvas" width="1000" height="1000"></canvas>
 
 <script src="/socket.io/socket.io.js"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 
 <script>
@@ -33,10 +31,11 @@
 	var c = canvas.getContext("2d");
 
 	var app = new Vue({
-	  	el: '#app',
+	  	el: '#ui',
 	  	data: {
 	    	points: 0,
 	    	selectedTile : "none",
+	    	faction : "none",
 	  	}
 	})
 	
@@ -50,12 +49,13 @@
 		drawMap();
 		if (faction){
 			app.points = factions[faction].points;
+			app.faction = faction;
+			document.getElementById("faction").style.backgroundColor = factions[faction].color; 
 		}
 	});
 	
 	socket.on("faction", function(data){
 		faction = data.factionId;
-		document.body.style.backgroundColor = factions[faction].color;
 	});
 	
 	var selectedUnitId = null;
@@ -70,20 +70,16 @@
 		// var unit = map.getUnitAt({x : x, y : y});
 		var tile = map.unitMap[x][y];
 		if (tile.unit != null){
-			console.log("1")
 			if (tile.unit.teamId != faction && selectedUnitId != null && tile.unit.teamId != selectedUnitId){
-				console.log("2")
 				socket.emit("attackUnit", {
 					attackerId : selectedUnitId,
 					defenderId : tile.unit.id
 				});
 			}
 			else if (tile.unit.teamId == faction){
-				console.log("3")
 				selectedUnitId = tile.unit.id;
 			}
 			else{
-				console.log("4");
 				selectedUnitId = tile.unit.id;
 			}
 		}
@@ -104,8 +100,15 @@
 		c.clearRect(0, 0, canvas.width, canvas.height);
 	
 		//temporary drawing of tiles
-		c.fillStyle = "#2ECC71";
 		c.fillRect(0, 0, map.width * tileSize, map.height * tileSize);
+		for (var x = 0; x < map.width; x++){
+			for (var y = 0; y < map.height; y++){
+				c.fillStyle = "#000000";
+				c.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+				c.fillStyle = "#2ECC71";
+				c.fillRect(x * tileSize + 1, y * tileSize + 1, tileSize - 2, tileSize - 2);
+			}
+		}
 	
 	
 		for (var i in map.units){

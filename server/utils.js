@@ -7,4 +7,12 @@ Utils.isAdjacent = function(position1, position2){
 	return false;
 }
 
+Utils.getAdjacents = function(position){
+	var adjacents = [];
+}
+
+Utils.getPath = function(map, start, end){
+
+}
+
 module.exports = Utils;
