@@ -23,6 +23,7 @@ var Unit = require("./server/unit.js");
 var map = new Map(20, 20);
 
 var sockets = {};
+var factions = {};
 
 io.sockets.on("connection", function(socket){
 	console.log("Socket connection.");
