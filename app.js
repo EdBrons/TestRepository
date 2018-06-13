@@ -34,7 +34,7 @@ io.sockets.on("connection", function(socket){
 	factions[socket.id] = {};
 	factions[socket.id].color = socket.color;
 	factions[socket.id].points = 100;
-	factions[socket.id].pointIncome = .1;
+	factions[socket.id].pointIncome = 1;
 	
 	var position = getRandomPosition();
 	if (position != false){
