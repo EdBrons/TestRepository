@@ -34,6 +34,7 @@ io.sockets.on("connection", function(socket){
 	factions[socket.id] = {};
 	factions[socket.id].color = socket.color;
 	factions[socket.id].points = 100;
+	factions[socket.id].pointIncome = .1;
 
 	map.createUnit(socket.id, getRandomPosition());
 
@@ -115,7 +116,7 @@ function Tick(){
 	map.update();
 
 	for (var i in factions){
-		factions[i].points += 1;
+		factions[i].points += factions[i].pointIncome;
 	}
 
 	updateClients();
