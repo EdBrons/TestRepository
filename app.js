@@ -51,11 +51,13 @@ io.sockets.on("connection", function(socket){
 
 	socket.on("buyUnit", function(data){
 		if (factions[socket.id].points >= 100){
-			var position = data.positon;
-			if (position == undefined || position == null || (map.getUnitAt(position) != null || map.getUnitMovingTo(position) != null)){
+			if (data.positon == undefined || data.positon == null){
 				data.position = getRandomPosition();
 			}
 			if (!map.isInBounds(data.position)){
+				data.position = getRandomPosition();
+			}
+			if (map.getUnitAt(data.positon) != null || map.getUnitMovingTo(data.positon) != null){
 				data.position = getRandomPosition();
 			}
 			factions[socket.id].points -= 100;
