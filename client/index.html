@@ -132,13 +132,22 @@
 				}
 			}
 			
-			c.fillRect(x, y, tileSize, tileSize);
+			//if unit is selected draw border around it
+			if (unit.id == selectedUnitId){
+				c.fillStyle = "#FFFFFF";
+				c.fillRect(x, y, tileSize, tileSize);
+			}
 			
+			//draw unit
+			c.fillRect(x + 1, y + 1, tileSize - 2, tileSize - 2);
+			
+			//draw border around health bar
 			c.fillStyle = "#000000";
 			c.fillRect(x - Math.floor(tileSize * .4), y - Math.floor(tileSize * .6), Math.floor(tileSize * 1.8), Math.floor(tileSize * .4));
 			
+			//draw health bar
 			c.fillStyle = "#FF0000";
-			c.fillRect(x - Math.floor(tileSize * .4) + 1, y - Math.floor(tileSize * .6) + 1, Math.floor(tileSize * 1.8) - 2, Math.floor(tileSize * .4) - 2);
+			c.fillRect(x - Math.floor(tileSize * .4) + 1, y - Math.floor(tileSize * .6) + 1, Math.floor((Math.floor(tileSize * 1.8) * unit.health / unit.maxHealth)) - 2, Math.floor(tileSize * .4) - 2);
 		}
 	}
 
