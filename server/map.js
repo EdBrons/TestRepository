@@ -52,12 +52,12 @@ Map.prototype.update = function(){
 			unit.attackCooldown--;
 		}
 		
-		if (unit.alert()){
-			var neighbors = Utils.getAdjacents();
+		if (unit.alert){
+			var neighbors = Utils.getAdjacents(unit.position);
 			for (var i in neighbors){
 				if (this.isInBounds(neighbors[i])){
 					var position = neighbors[i];
-					if (this.getUnitAt(position).teamId != unit.teamId){
+					if (this.getUnitAt(position) != null && this.getUnitAt(position).teamId != unit.teamId){
 						this.attack(unit.id, this.getUnitAt(position).id);	
 					}
 				}
