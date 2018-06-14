@@ -51,6 +51,18 @@ Map.prototype.update = function(){
 		if (unit.attackCooldown > 0){
 			unit.attackCooldown--;
 		}
+		
+		if (unit.alert()){
+			var neighbors = Utils.getAdjacents();
+			for (var i in neighbors){
+				if (this.isInBounds(neighbors[i])){
+					var position = neighbors[i];
+					if (this.getUnitAt(position).teamId != unit.teamId){
+						this.attack(unit.id, this.getUnitAt(position).id);	
+					}
+				}
+			}
+		}
 
 		if (unit.target != null && unit.target != undefined && unit.moving == false){
 			if (unit.position.x < unit.target.x){
@@ -148,6 +160,18 @@ Map.prototype.moveUnit = function(unitId, destination){
 			this.unitMap[unit.destination.x][unit.destination.y].movingTo = unit;
 			unit.moving = true;
 			unit.progress = 0;
+		}
+	}
+}
+
+Map.prototype.setAlert = function(unitId){
+	var unit = this.getUnitById(unitId);
+	if (unit){
+		if (unit.alert){
+			unit.alert = false;	
+		}
+		else{
+			unit.alert = true;
 		}
 	}
 }
