@@ -52,6 +52,21 @@ Map.prototype.update = function(){
 			unit.attackCooldown--;
 		}
 
+		if (unit.target != null){
+			if (unit.position.x < unit.target.x){
+				this.moveUnit(unit.id, {x : unit.position.x + 1, y : unit.position.y});
+			}
+			else if (unit.position.x > unit.target.x){
+				this.moveUnit(unit.id, {x : unit.position.x - 1, y : unit.position.y});
+			}
+			else if (unit.position.y < unit.target.y){
+				this.moveUnit(unit.id, {x : unit.position.x, y : unit.position.y + 1});
+			}
+			else if (unit.position.y > unit.target.y){
+				this.moveUnit(unit.id, {x : unit.position.x, y : unit.position.y - 1});
+			}
+		}
+
 		if (unit.moving){
 			if (this.canMoveTo(unit, unit.destination)){
 				unit.progress += 10;
@@ -68,12 +83,16 @@ Map.prototype.update = function(){
 					this.unitMap[unit.destination.x][unit.destination.y].movingTo = null;
 					//update unit position
 					unit.position = unit.destination;
+					//reset progress
+					unit.progress = 0;
 					//update unit destination
 					unit.destination = null;
 					//stop unit moving
 					unit.moving = false;
-					//reset progress
-					unit.progress = 0;
+
+					if (unit.position.x == unit.target.x && unit.position.y == unit.target.y){
+						unit.target = null;
+					}
 				}
 			}
 			else{
@@ -109,9 +128,7 @@ Map.prototype.moveUnit = function(unitId, destination){
 	for (var i in this.units){
 		var unit = this.units[i];
 		if (unit.id == unitId){
-
 			if (unit.moving){
-				// console.log(unit.destination.x + "," + unit.destination.y + " " + destination.x + "," + destination.y);
 				if (unit.destination.x == destination.x && unit.destination.y == destination.y){
 					return false;
 				}
@@ -132,6 +149,11 @@ Map.prototype.moveUnit = function(unitId, destination){
 			unit.progress = 0;
 		}
 	}
+}
+
+Map.prototype.setTarget = function(unitId, destination){
+	var unit = this.getUnitById(unitId);
+	unit.target = destination;
 }
 
 Map.prototype.canMoveTo = function(unit, destination){
@@ -182,6 +204,36 @@ Map.prototype.getUnitById = function(unitId){
 		}
 	}
 	return false;
+}
+
+Map.prototype.getRandomPosition = function(){
+	
+	var tries = 10;
+	
+	var position = {
+		x : Math.floor(Math.random() * this.width),
+		y : Math.floor(Math.random() * this.height)
+	};
+	
+	var unique = false;
+	
+	while (unique == false){
+		position = {
+			x : Math.floor(Math.random() * this.width),
+			y : Math.floor(Math.random() * this.height)
+		};
+		
+		if (this.getUnitAt(position) == null && this.getUnitMovingTo(position) == null){
+			unique = true;
+		}
+		
+		tries--;
+		if (tries < 0){
+			return false;
+		}
+	}
+
+	return position;
 }
 
 module.exports = Map;

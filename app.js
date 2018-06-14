@@ -19,6 +19,7 @@ console.log("Server started.");
 
 var Map = require("./server/map.js");
 var Unit = require("./server/unit.js");
+var Utils = require("./server/utils.js")
 
 var map = new Map(20, 20);
 
@@ -29,14 +30,14 @@ io.sockets.on("connection", function(socket){
 	console.log("Socket connection.");
 	socket.id = Math.floor(Math.random() * 1000000000);
 	sockets[socket.id] = socket;
-	socket.color = getRandomColor();
+	socket.color = Utils.getRandomColor();
 
 	factions[socket.id] = {};
 	factions[socket.id].color = socket.color;
 	factions[socket.id].points = 100;
 	factions[socket.id].pointIncome = 1;
 	
-	var position = getRandomPosition();
+	var position = map.getRandomPosition();
 	if (position != false){
 		map.createUnit(socket.id, position);	
 	}
@@ -54,18 +55,21 @@ io.sockets.on("connection", function(socket){
 
 	socket.on("buyUnit", function(data){
 		if (factions[socket.id].points >= 100){
-			if (data.position == undefined || data.position == null || (map.getUnitAt(data.position) != null || map.getUnitMovingTo(data.position != null))){
-				data.position = getRandomPosition();
+			if (data.position == undefined || data.position == null || (map.getUnitAt(data.position) != null || map.getUnitMovingTo(data.position != null)) || data.position == "none"){
+				data.position = map.getRandomPosition();
 			}
-			factions[socket.id].points -= 100;
 			if (data.position != false){
 				map.createUnit(socket.id, data.position);
+				factions[socket.id].points -= 100;
 			}
 		}
 	});
 
 	socket.on("moveUnit", function(data){
 		var unit = map.getUnitById(data.unitId);
+		if (Utils.isAdjacent(unit.position, data.to) == false){
+			map.setTarget(unit.id, data.to);
+		}
 		if (unit.teamId == socket.id && map.isInBounds(data.to)){
 			map.moveUnit(data.unitId, data.to);
 		}
@@ -73,8 +77,8 @@ io.sockets.on("connection", function(socket){
 
 	updateClients();
 
-	socket.emit("faction", {
-		factionId : socket.id
+	socket.emit("teamId", {
+		teamId : socket.id
 	});
 });
 
@@ -83,39 +87,9 @@ function updateClients(){
 		var socket = sockets[i];
 		socket.emit("mapUpdate", {
 			map : map,
-			factions : factions
+			teams : factions
 		});
 	}
-}
-
-function getRandomPosition(){
-	
-	var tries = 10;
-	
-	var position = {
-		x : Math.floor(Math.random() * map.width),
-		y : Math.floor(Math.random() * map.height)
-	};
-	
-	var unique = false;
-	
-	while (unique == false){
-		position = {
-			x : Math.floor(Math.random() * map.width),
-			y : Math.floor(Math.random() * map.height)
-		};
-		
-		if (map.getUnitAt(position) == null && map.getUnitMovingTo(position) == null){
-			unique = true;
-		}
-		
-		tries--;
-		if (tries < 0){
-			return false;
-		}
-	}
-
-	return position;
 }
 
 var ticksPerSecond = 20;
@@ -131,16 +105,6 @@ function Tick(){
 	updateClients();
 
 	setTimeout(Tick, 1000 / ticksPerSecond);
-
-}
-
-function getRandomColor() {
-	var letters = '0123456789ABCDEF';
-	var color = '#';
-	for (var i = 0; i < 6; i++) {
-		color += letters[Math.floor(Math.random() * 16)];
-	}
-	return color;
 }
 
 Tick();
