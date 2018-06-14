@@ -162,7 +162,7 @@ Map.prototype.canMoveTo = function(unit, destination){
 		return false;
 	}
 
-	if (this.getUnitAt(destination) != null && this.getUnitMovingTo(destination) != null){
+	if (this.getUnitAt(destination) != null || this.getUnitMovingTo(destination) != null){
 		console.log(unit.getName() + " can't move because the destination has a unit");
 		return false;
 	}
