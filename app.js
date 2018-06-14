@@ -85,6 +85,16 @@ io.sockets.on("connection", function(socket){
 			map.moveUnit(data.unitId, data.to);
 		}
 	});
+	
+	socket.on("setAlert", function(data){
+		var unit = data.unit;
+		
+		if (unit.teamId != socket.id){
+			return false;	
+		}
+		
+		map.setAlert(unit);
+	});
 
 	updateClients();
 
