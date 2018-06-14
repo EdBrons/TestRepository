@@ -26,7 +26,6 @@
 		var socket = io();
 	
 		var map;
-		var units;
 		var teams = {};
 		var teamId;
 	
@@ -83,6 +82,17 @@
 		var selectedUnits = [];
 		var selectedPosition = null;
 
+		function select(unit){
+			if (selected(unit)){
+				removeSelected(unit);
+			}
+			else{
+				if (teamId == unit.teamId){
+					selectedUnits.push(unit);
+				}
+			}
+		}
+
 		function selected(unit){
 			for (var i in selectedUnits){
 				if (selectedUnits[i]){
@@ -103,20 +113,74 @@
 				}
 			}
 		}
+
+		document.addEventListener("keydown", function(e){
+
+		});
 	
 		canvas.addEventListener("click", handleClick);
 
-		var selection = false;
-		var selectionTopLeft = {
+		var selecting = false;
+		var selection1 = {
 			x : 0,
 			y : 0,
 		}
-		var selectionBottonRight = {
+		var selection2 = {
 			x : 0,
 			y : 0,
 		}
 
+		canvas.addEventListener("mousedown", function(e){
+			var x = Math.floor((e.clientX - canvas.offsetLeft) / tileSize);
+			var y = Math.floor((e.clientY - canvas.offsetTop) / tileSize);
+
+			selection1.x = x;
+			selection1.y = y;
+		});
+
+		canvas.addEventListener("mouseup", function(e){
+
+			var x = Math.floor((e.clientX - canvas.offsetLeft) / tileSize);
+			var y = Math.floor((e.clientY - canvas.offsetTop) / tileSize);
+
+			selection2.x = x;
+			selection2.y = y;
+
+			var topLeft = {
+				x : 0,
+				y : 0,
+			};
+
+			topLeft.x = Math.min(selection1.x, selection2.x);
+			topLeft.y = Math.min(selection1.y, selection2.y);
+
+			var bottomRight = {
+				x : 0,
+				y : 0,
+			}
+
+			bottomRight.x = Math.max(selection1.x, selection2.x);
+			bottomRight.y = Math.max(selection1.y, selection2.y);
+
+			// console.log(topLeft.x + "," + topLeft.y + " " + bottomRight.x + "," + bottomRight.y);
+			for (var i in map.units){
+				var unit = map.units[i];
+				if (unit){
+					if (unit.position.x >= topLeft.x && unit.position.x <= bottomRight.x 
+						&& unit.position.y >= topLeft.y && unit.position.y <= bottomRight.y){
+						select(unit);
+						selecting = true;
+					}
+				}
+			}
+		});
+
 		function handleClick(e){
+			if (selecting){
+				selecting = false;
+				return false;
+			}
+
 			var x = Math.floor((e.clientX - canvas.offsetLeft) / tileSize);
 			var y = Math.floor((e.clientY - canvas.offsetTop) / tileSize);
 	
