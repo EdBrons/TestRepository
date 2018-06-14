@@ -87,13 +87,13 @@ io.sockets.on("connection", function(socket){
 	});
 	
 	socket.on("setAlert", function(data){
-		var unit = data.unit;
+		var unit = map.getUnitById(data.unitId);
 		
 		if (unit.teamId != socket.id){
 			return false;	
 		}
 		
-		map.setAlert(unit);
+		map.setAlert(unit.id);
 	});
 
 	updateClients();
