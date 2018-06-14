@@ -11,6 +11,8 @@
 			<div id="team">Team {{teamId}}</div>
 			<div>Points {{points}}</div>
 			<button onclick="buyUnit(selectedPosition)">Buy Unit</button>
+			<button onclick="setAlert()">Set Selected Units to Alert</button>
+			<button onclick="moveUnits()">Move selected Units</button>
 		</div>
 	</div>
 	<canvas id="canvas"></canvas>
@@ -117,6 +119,21 @@
 		document.addEventListener("keydown", function(e){
 
 		});
+	
+	
+		function moveUnits(){
+			
+		}
+	
+		function setAlert(){
+			for (var i in selectedUnits){
+				if (selectedUnits[i]){
+					socket.emit("setAlert", {
+						unitId : selectedUnits[i].id
+					});
+				}
+			}
+		}
 	
 		canvas.addEventListener("click", handleClick);
 
