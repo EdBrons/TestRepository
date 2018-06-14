@@ -8,7 +8,9 @@
 <body>
 	<div id="app">
 		<div id="ui-top">
-			<div>Team {{teamId}}</div>
+			<div id="team">Team {{teamId}}</div>
+			<div>Points {{points}}</div>
+			<button onclick="buyUnit(selectedPosition)">Buy Unit</button>
 		</div>
 	</div>
 	<canvas id="canvas"></canvas>
@@ -35,10 +37,9 @@
 		socket.on("mapUpdate", function(data){
 			map = data.map;
 			teams = data.teams;
-	socket.on("faction", function(data){
-		faction = data.factionId;
-	});
-	
+			if (data.teams[teamId]){
+				app.points = data.teams[teamId].points;
+			}
 			canvas.width = map.width * tileSize;
 			canvas.height = map.height * tileSize;
 	
@@ -48,6 +49,7 @@
 		socket.on("teamId", function(data){
 			teamId = data.teamId;
 			app.teamId = teamId;
+			document.getElementById("team").style.backgroundColor = teams[teamId].color;
 		});
 	
 		function moveUnit(unitId, to){
@@ -73,50 +75,47 @@
 		var app = new Vue({
 		  	el: '#app',
 		  	data: {
-		    	teamId : "none"
+		    	teamId : "none",
+		    	points : 0,
 		  	}
 		})
 	
-		var selectedUnit = null;
+		var selectedUnits = [];
 		var selectedPosition = null;
+
+		function selected(unit){
+			for (var i in selectedUnits){
+				if (selectedUnits[i]){
+					if (selectedUnits[i].id == unit.id){
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+
+		function removeSelected(unit){
+			for (var i = selectedUnits.length - 1; i >= 0 ; i--){
+				if (selectedUnits[i]){
+					if (selectedUnits[i].id == unit.id){
+						selectedUnits.splice(i, 1);
+					}
+				}
+			}
+		}
 	
 		canvas.addEventListener("click", handleClick);
-		
-		//document.addEventListener("keydown", handleKeydown);
-		
-	// 	function handleKeydown(e){
-	// 		if (selectedUnit == null){
-	// 			return false;
-	// 		}
-	// 		if (e.keyCode == 37){
-	// 			//left
-	// 			if (selectedUnitId != null){
-	// 				socket.emit("moveUnit", {
-	// 					unitId : selectedUnit.id,
-	// 					to : {x : selectedUnit.position.x - 1, y : selectedUnit.position.y}
-	// 				});
-	// 			}
-	// 		}
-	// 		else if (e.keyCode == 38){
-	// 			//up
-	// 			if (selectedUnitId != null){
-	// 				socket.emit("moveUnit", {
-	// 					unitId : selectedUnit.id,
-	// 					to : {x : selectedUnit.position.x, y : selectedUnit.position.y - 1}
-	// 				});
-	// 			}
-	// 		}
-	// 		else if (e.keyCode == 39){
-	// 			//right
-	// 			if (selectedUnitId != null){
-	// 				socket.emit("moveUnit", {
-	// 					unitId : selectedUnit.id,
-	// 					to : {x : selectedUnit.position.x + 1, y : selectedUnit.position.y}
-	// 				});
-	// 			}
-	// 		}
-	// 	app.selectedTile = {x : x, y : y};
-	// }
+
+		var selection = false;
+		var selectionTopLeft = {
+			x : 0,
+			y : 0,
+		}
+		var selectionBottonRight = {
+			x : 0,
+			y : 0,
+		}
+
 		function handleClick(e){
 			var x = Math.floor((e.clientX - canvas.offsetLeft) / tileSize);
 			var y = Math.floor((e.clientY - canvas.offsetTop) / tileSize);
@@ -125,29 +124,42 @@
 			var clickedPosition = {x : x, y : y};
 	
 			//if we have a selected unit
-			if (selectedUnit != null){
+			if (selectedUnits.length > 0){
 				//and we clicked an empty tile
 				if (clickedUnit == null){
 					//then move
-					moveUnit(selectedUnit.id, clickedPosition);
+					for (var i in selectedUnits){
+						if (selectedUnits[i]){
+							moveUnit(selectedUnits[i].id, clickedPosition);
+						}
+					}
 				}
 				//tile is occupied
 				else{
+					if (selected(clickedUnit)){
+						removeSelected(clickedUnit);
+					}
 					//the unit is one of ours
-					if (clickedUnit.teamId == teamId){
+					else if (clickedUnit.teamId == teamId){
 						//select it
-						selectedUnit = clickedUnit;
+						selectedUnits.push(clickedUnit);
 					}
 					//it is an enemy
-					else{
-						attackUnit(selectedUnit.id, clickedUnit.id);
+					if(clickedUnit.teamId != teamId){
+						for (var i in selectedUnits){
+							if (selectedUnits[i]){
+								attackUnit(selectedUnits[i].id, clickedUnit.id);
+							}
+						}
 					}
 				}
 			}
 			else{
 				//we have no unit selected so we select that unit
-				selectedUnit = clickedUnit;
+				selectedUnits.push(clickedUnit);
 			}
+
+			selectedPosition = clickedPosition;
 		}
 		
 		//drawing
@@ -193,8 +205,8 @@
 				}
 				
 				//if unit is selected draw border around it
-				if (selectedUnit != null){
-					if (unit.id == selectedUnit.id){
+				if (selectedUnits.length > 0){
+					if (selected(unit)){
 						c.fillStyle = "#FFFFFF";
 						c.fillRect(x, y, tileSize, tileSize);
 					}

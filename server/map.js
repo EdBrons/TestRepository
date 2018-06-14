@@ -52,7 +52,7 @@ Map.prototype.update = function(){
 			unit.attackCooldown--;
 		}
 
-		if (unit.target != null){
+		if (unit.target != null && unit.target != undefined){
 			if (unit.position.x < unit.target.x){
 				this.moveUnit(unit.id, {x : unit.position.x + 1, y : unit.position.y});
 			}

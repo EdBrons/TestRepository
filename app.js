@@ -35,7 +35,7 @@ io.sockets.on("connection", function(socket){
 	factions[socket.id] = {};
 	factions[socket.id].color = socket.color;
 	factions[socket.id].points = 100;
-	factions[socket.id].pointIncome = 1;
+	factions[socket.id].pointIncome = .1;
 	
 	var position = map.getRandomPosition();
 	if (position != false){
@@ -67,6 +67,11 @@ io.sockets.on("connection", function(socket){
 
 	socket.on("moveUnit", function(data){
 		var unit = map.getUnitById(data.unitId);
+
+		if (unit.teamId != socket.id){
+			return false;
+		}
+
 		if (Utils.isAdjacent(unit.position, data.to) == false){
 			map.setTarget(unit.id, data.to);
 		}
