@@ -61,6 +61,8 @@
 		}
 	
 		function attackUnit(attackerId, defenderId){
+			console.log("attackl")
+
 			socket.emit("attackUnit", {
 				attackerId : attackerId,
 				defenderId : defenderId,
@@ -190,15 +192,23 @@
 					}
 				}
 			}
+
+			console.log("I WAS CALLED")
 		});
 
 		function handleClick(e){
+			if (selecting){
+				selecting = false;
+				return;
+			}
 
 			var x = Math.floor((e.clientX - canvas.offsetLeft) / tileSize);
 			var y = Math.floor((e.clientY - canvas.offsetTop) / tileSize);
 	
 			var clickedUnit = map.unitMap[x][y].unit;
 			var clickedPosition = {x : x, y : y};
+
+			console.log(clickedUnit);
 	
 			//if we have a selected unit
 			if (selectedUnits.length > 0){
@@ -305,6 +315,17 @@
 					Math.floor((Math.floor(tileSize * 1.8) * unit.health / unit.maxHealth)) - 2, 
 					Math.floor(tileSize * .4) - 2
 					);
+
+
+				c.fillStyle = "#00FF00";
+				if (unit.alert == true){
+					c.fillRect(
+						x + tileSize / 4,
+						y + tileSize / 4,
+						tileSize / 2,
+						tileSize / 2,
+					);
+				}
 			}
 		}
 	</script>
