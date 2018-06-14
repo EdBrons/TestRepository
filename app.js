@@ -1,21 +1,3 @@
-// app.js
-var express = require('express');  
-var app = express();  
-var server = require('http').createServer(app);  
-var io = require('socket.io')(server);
-
-app.get('/', function(req, res,next) {  
-    res.sendFile(__dirname + '/client/index.html');
-});
-
-app.use("/client", express.static(__dirname + "/client"));
-
-const PORT = process.env.PORT || 2000;
-
-server.listen(PORT, () => {
-	console.log("Our app is running on port " + PORT);
-});
-console.log("Server started.");
 
 var Map = require("./server/map.js");
 var Unit = require("./server/unit.js");
@@ -35,7 +17,7 @@ io.sockets.on("connection", function(socket){
 	factions[socket.id] = {};
 	factions[socket.id].color = socket.color;
 	factions[socket.id].points = 100;
-	factions[socket.id].pointIncome = .1;
+	factions[socket.id].pointIncome = 10;
 	
 	var position = map.getRandomPosition();
 	if (position != false){
@@ -50,10 +32,14 @@ io.sockets.on("connection", function(socket){
 	});
 
 	socket.on("attackUnit", function(data){
+		console.log("attack");
+
 		map.attack(data.attackerId, data.defenderId);
 	});
 
 	socket.on("buyUnit", function(data){
+		console.log("buy")
+
 		if (factions[socket.id].points >= 100){
 			if (data.position == undefined || data.position == null || (map.getUnitAt(data.position) != null || map.getUnitMovingTo(data.position != null)) || data.position == "none"){
 				data.position = map.getRandomPosition();
@@ -66,6 +52,8 @@ io.sockets.on("connection", function(socket){
 	});
 
 	socket.on("moveUnit", function(data){
+		console.log("move")
+
 		var unit = map.getUnitById(data.unitId);
 
 		if (unit.teamId != socket.id){
