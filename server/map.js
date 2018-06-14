@@ -52,13 +52,14 @@ Map.prototype.update = function(){
 			unit.attackCooldown--;
 		}
 
-		if (unit.target != null && unit.target != undefined){
+		if (unit.target != null && unit.target != undefined && unit.moving == false){
 			if (unit.position.x < unit.target.x){
 				this.moveUnit(unit.id, {x : unit.position.x + 1, y : unit.position.y});
 			}
 			else if (unit.position.x > unit.target.x){
 				this.moveUnit(unit.id, {x : unit.position.x - 1, y : unit.position.y});
 			}
+			
 			else if (unit.position.y < unit.target.y){
 				this.moveUnit(unit.id, {x : unit.position.x, y : unit.position.y + 1});
 			}
@@ -90,7 +91,7 @@ Map.prototype.update = function(){
 					//stop unit moving
 					unit.moving = false;
 
-					if (unit.position.x == unit.target.x && unit.position.y == unit.target.y){
+					if (unit.target != null && unit.position.x == unit.target.x && unit.position.y == unit.target.y){
 						unit.target = null;
 					}
 				}
@@ -162,8 +163,13 @@ Map.prototype.canMoveTo = function(unit, destination){
 		return false;
 	}
 
-	if (this.getUnitAt(destination) != null || this.getUnitMovingTo(destination) != null){
+	if (this.getUnitAt(destination) != null){
 		console.log(unit.getName() + " can't move because the destination has a unit");
+		return false;
+	}
+
+	if (this.getUnitMovingTo(destination) != null && this.getUnitById(destination).id != unit.Id){
+		console.log(unit.getName() + " can't move because the destination has a unit moving to it")
 		return false;
 	}
 
