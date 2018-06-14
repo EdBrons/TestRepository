@@ -14,7 +14,7 @@
 		Selected Tile : {{selectedTile}}
 		<button onclick="buildUnit()">Build Unit</button>
 	</div>
-=	<canvas id="canvas"></canvas>
+	<canvas id="canvas"></canvas>
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
@@ -22,13 +22,23 @@
 
 <script>
 	var socket = io();
+
 	var map;
 	var units;
 	var factions = {};
 	var faction;
-	var tileSize = 16;
-	var canvas = document.getElementById("canvas");
-	var c = canvas.getContext("2d");
+
+	socket.on("mapUpdate", function(data){
+		map = data.map;
+		factions = data.factions;
+		drawMap();
+		if (faction){
+			app.points = factions[faction].points;
+			app.faction = faction;
+			document.getElementById("faction").style.backgroundColor = factions[faction].color; 
+		}
+	});
+
 
 	var app = new Vue({
 	  	el: '#ui',
@@ -41,18 +51,6 @@
 	
 	canvas.width = 20 * tileSize;
 	canvas.height = 20 * tileSize;
-	
-	socket.on("mapUpdate", function(data){
-		console.log("Recieved map update.");
-		map = data.map;
-		factions = data.factions;
-		drawMap();
-		if (faction){
-			app.points = factions[faction].points;
-			app.faction = faction;
-			document.getElementById("faction").style.backgroundColor = factions[faction].color; 
-		}
-	});
 	
 	socket.on("faction", function(data){
 		faction = data.factionId;
@@ -139,7 +137,10 @@
 		app.selectedTile = {x : x, y : y};
 	}
 	
-	//Game
+	//drawing
+	var tileSize = 16;
+	var canvas = document.getElementById("canvas");
+	var c = canvas.getContext("2d");
 
 	function drawMap(){
 		c.clearRect(0, 0, canvas.width, canvas.height);
