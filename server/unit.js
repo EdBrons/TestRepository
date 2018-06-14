@@ -18,6 +18,8 @@ var Unit = function(id, teamId, position){
 
 	this.ranged = false;
 	this.range = 0;
+	
+	this.alert = false;
 }
 
 Unit.prototype.getName = function(){
