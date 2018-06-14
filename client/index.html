@@ -11,13 +11,40 @@
 			<div>Team {{teamId}}</div>
 		</div>
 	</div>
+<<<<<<< HEAD
+=======
+	<canvas id="canvas"></canvas>
+</div>
+>>>>>>> af87ce94c3f717f1889e1c0d8f586bfbfc1aaf35
 
 	<div id="game">
 		<canvas id="canvas"></canvas>
 	</div>
 
+<<<<<<< HEAD
 	<script src="/socket.io/socket.io.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+=======
+<script>
+	var socket = io();
+
+	var map;
+	var units;
+	var factions = {};
+	var faction;
+
+	socket.on("mapUpdate", function(data){
+		map = data.map;
+		factions = data.factions;
+		drawMap();
+		if (faction){
+			app.points = factions[faction].points;
+			app.faction = faction;
+			document.getElementById("faction").style.backgroundColor = factions[faction].color; 
+		}
+	});
+
+>>>>>>> af87ce94c3f717f1889e1c0d8f586bfbfc1aaf35
 
 	<script>
 		var socket = io();
@@ -27,6 +54,7 @@
 		var teams = {};
 		var teamId;
 	
+<<<<<<< HEAD
 		var tileSize = 16;
 		var canvas = document.getElementById("canvas");
 		var c = canvas.getContext("2d");
@@ -34,6 +62,11 @@
 		socket.on("mapUpdate", function(data){
 			map = data.map;
 			teams = data.teams;
+=======
+	socket.on("faction", function(data){
+		faction = data.factionId;
+	});
+>>>>>>> af87ce94c3f717f1889e1c0d8f586bfbfc1aaf35
 	
 			canvas.width = map.width * tileSize;
 			canvas.height = map.height * tileSize;
@@ -106,6 +139,7 @@
 					});
 				}
 			}
+<<<<<<< HEAD
 			else if (e.keyCode == 39){
 				//right
 				if (selectedUnitId != null){
@@ -114,6 +148,28 @@
 						to : {x : selectedUnit.position.x + 1, y : selectedUnit.position.y}
 					});
 				}
+=======
+		}
+		app.selectedTile = {x : x, y : y};
+	}
+	
+	//drawing
+	var tileSize = 16;
+	var canvas = document.getElementById("canvas");
+	var c = canvas.getContext("2d");
+
+	function drawMap(){
+		c.clearRect(0, 0, canvas.width, canvas.height);
+	
+		//temporary drawing of tiles
+		c.fillRect(0, 0, map.width * tileSize, map.height * tileSize);
+		for (var x = 0; x < map.width; x++){
+			for (var y = 0; y < map.height; y++){
+				c.fillStyle = "#000000";
+				c.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+				c.fillStyle = "#2ECC71";
+				c.fillRect(x * tileSize + 1, y * tileSize + 1, tileSize - 2, tileSize - 2);
+>>>>>>> af87ce94c3f717f1889e1c0d8f586bfbfc1aaf35
 			}
 			else if (e.keyCode == 40){
 				//down
