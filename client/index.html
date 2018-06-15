@@ -12,7 +12,7 @@
 			<div>Points {{points}}</div>
 			<button onclick="buyUnit(selectedPosition)">Buy Unit</button>
 			<button onclick="setAlert()">Set Selected Units to Alert</button>
-			<button onclick="deselectAll()">Deselect All</button>
+			<button onclick="deselectAll()">Deselect All Units</button>
 		</div>
 	</div>
 	<canvas id="canvas"></canvas>
@@ -197,14 +197,6 @@
 
 			console.log("I WAS CALLED")
 		});
-	
-		function deselectAll(){
-			for (var i in selectedUnits){
-				if (selected(selectedUnits[i])){
-					select(selectedUnits[i]);
-				}
-			}
-		}
 
 		function handleClick(e){
 			if (selecting){
@@ -258,6 +250,10 @@
 
 			selectedPosition = clickedPosition;
 		}
+
+		function deselectAll(){
+			selectedUnits = [];
+		}
 		
 		//drawing
 		function drawMap(){
@@ -287,6 +283,23 @@
 						tileSize,
 						tileSize,
 					);
+				}
+			}
+
+			//draw home tile
+			for (var i in teams){
+				var team = teams[i];
+				if (team){
+					//draw plus on tile
+					c.fillStyle = team.color;
+					c.fillRect(
+							team.homeTile.x * tileSize - Math.floor(tileSize / 4),
+							team.homeTile.y * tileSize - Math.floor(tileSize / 4),
+							tileSize + Math.floor(tileSize /2),
+							tileSize + Math.floor(tileSize /2),
+						)
+
+
 				}
 			}
 		
