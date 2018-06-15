@@ -82,7 +82,7 @@ Map.prototype.update = function(){
 
 		if (unit.moving){
 			if (this.canMoveTo(unit, unit.destination)){
-				unit.progress += 10;
+				unit.progress += 30;
 				if (unit.progress > 100){
 
 					//tell ian for testing purposes
