@@ -329,6 +329,19 @@
 					);
 				}
 			}
+			
+			for (var i in incomeTiles){
+				var tile = incomeTiles[i];
+				if (tile){
+					c.fillStyle = "#F4D03F";
+					c.fillRect(
+						tile.position.x * tileSize,
+						tile.position.y * tileSize,
+						tileSize,
+						tileSize,
+					);
+				}
+			}
 		}
 	</script>
 
