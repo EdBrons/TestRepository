@@ -21,12 +21,12 @@ var Map = require("./server/map.js");
 var Unit = require("./server/unit.js");
 var Utils = require("./server/utils.js")
 
-var map = new Map(20, 20);
+var map = new Map(100, 100);
 
 var sockets = {};
 var factions = {};
 var incomeTiles = [];
-for (var i = 0; i < 5; i++){
+for (var i = 0; i < 20; i++){
 	var position = {
 		x : Math.floor(Math.random() * map.width),
 		y : Math.floor(Math.random() * map.height),
