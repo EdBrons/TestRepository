@@ -12,7 +12,7 @@
 			<div>Points {{points}}</div>
 			<button onclick="buyUnit(selectedPosition)">Buy Unit</button>
 			<button onclick="setAlert()">Set Selected Units to Alert</button>
-			<button onclick="moveUnits()">Move selected Units</button>
+			<button onclick="deselectAll()">Deselect All</button>
 		</div>
 	</div>
 	<canvas id="canvas"></canvas>
@@ -197,6 +197,14 @@
 
 			console.log("I WAS CALLED")
 		});
+	
+		function deselectAll(){
+			for (var i in selectedUnits){
+				if (selected(selectedUnits[i])){
+					select(selectedUnits[i]);
+				}
+			}
+		}
 
 		function handleClick(e){
 			if (selecting){
