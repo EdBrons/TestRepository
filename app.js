@@ -138,7 +138,7 @@ function updateClients(){
 	}
 }
 
-var ticksPerSecond = 10;
+var ticksPerSecond = 20;
 
 function updateIncome(){
 	for (var i in factions){
