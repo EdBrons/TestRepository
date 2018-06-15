@@ -30,6 +30,7 @@
 		var map;
 		var teams = {};
 		var teamId;
+		var incomeTiles = [];
 	
 		var tileSize = 16;
 		var canvas = document.getElementById("canvas");
@@ -41,6 +42,7 @@
 			if (data.teams[teamId]){
 				app.points = data.teams[teamId].points;
 			}
+			incomeTiles = data.incomeTiles;
 			canvas.width = map.width * tileSize;
 			canvas.height = map.height * tileSize;
 	
