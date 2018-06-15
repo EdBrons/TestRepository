@@ -25,6 +25,21 @@ var map = new Map(20, 20);
 
 var sockets = {};
 var factions = {};
+var incomeTiles = [];
+for (var i = 0; i < 5; i++){
+	var position = {
+		x : Math.floor(Math.random() * map.width),
+		y : Math.floor(Math.random() * map.height),
+	}
+	
+	var income = Math.floor(Math.random() * 10) / 10;
+	
+	incomeTiles.push({
+		position : position,
+		income : income,
+		controlledBy : null,
+	});
+}
 
 io.sockets.on("connection", function(socket){
 	console.log("Socket connection.");
@@ -35,7 +50,6 @@ io.sockets.on("connection", function(socket){
 	factions[socket.id] = {};
 	factions[socket.id].color = socket.color;
 	factions[socket.id].points = 100;
-	factions[socket.id].pointIncome = .05;
 	
 	var position = map.getRandomPosition();
 	if (position != false){
@@ -108,21 +122,43 @@ function updateClients(){
 		var socket = sockets[i];
 		socket.emit("mapUpdate", {
 			map : map,
-			teams : factions
+			teams : factions,
+			incomeTiles : incomeTiles,
 		});
 	}
 }
 
 var ticksPerSecond = 20;
 
+function updateIncome(){
+	for (var i in factions){
+		if (factions[i]){
+			factions[i].pointIncome = 0;	
+		}
+	}
+	for (var i in incomeTiles){
+		if (incomeTiles[i]){
+			var incomeTile = incomeTiles[i];
+			var unit = map.getUnitAt(incomeTile.position);	
+			if (unit){
+				factions[unit.teamId].pointIncome += incomeTile.income;	
+			}
+		}
+	}	
+}
+
 function Tick(){
 	
 	map.update();
 
+	updateIncome();
+	
 	for (var i in factions){
-		factions[i].points += factions[i].pointIncome;
+		if (factions[i]){
+			factions[i].points += factions[i].pointIncome;	
+		}
 	}
-
+	
 	updateClients();
 
 	setTimeout(Tick, 1000 / ticksPerSecond);
