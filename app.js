@@ -21,12 +21,12 @@ var Map = require("./server/map.js");
 var Unit = require("./server/unit.js");
 var Utils = require("./server/utils.js")
 
-var map = new Map(100, 100);
+var map = new Map(20, 20);
 
 var sockets = {};
 var factions = {};
 var incomeTiles = [];
-for (var i = 0; i < 20; i++){
+for (var i = 0; i < 5; i++){
 	var position = {
 		x : Math.floor(Math.random() * map.width),
 		y : Math.floor(Math.random() * map.height),
@@ -50,6 +50,7 @@ io.sockets.on("connection", function(socket){
 	factions[socket.id] = {};
 	factions[socket.id].color = socket.color;
 	factions[socket.id].points = 100;
+	factions[socket.id].homeTile = map.getRandomPosition();
 	
 	var position = map.getRandomPosition();
 	if (position != false){
@@ -72,14 +73,23 @@ io.sockets.on("connection", function(socket){
 	socket.on("buyUnit", function(data){
 		console.log("buy")
 
+		var spawnPosition = {
+			x : factions[socket.id].homeTile.x,
+			y : factions[socket.id].homeTile.y,
+		}
+
+		while (map.getUnitAt(spawnPosition) != null || map.getUnitMovingTo(spawnPosition) != null){
+			spawnPosition = {
+				x : factions[socket.id].homeTile.x + Math.floor(Math.random() * 4),
+				y : factions[socket.id].homeTile.y + Math.floor(Math.random() * 4),
+			}
+		}
+
+		console.log(spawnPosition);
+
 		if (factions[socket.id].points >= 100){
-			if (data.position == undefined || data.position == null || (map.getUnitAt(data.position) != null || map.getUnitMovingTo(data.position != null)) || data.position == "none"){
-				data.position = map.getRandomPosition();
-			}
-			if (data.position != false){
-				map.createUnit(socket.id, data.position);
-				factions[socket.id].points -= 100;
-			}
+			map.createUnit(socket.id, spawnPosition);
+			factions[socket.id].points -= 100;
 		}
 	});
 
